@@ -82,7 +82,7 @@ All these steps are defined in the official Process Design Document¹. :contentR
 ├── project.json                        # UiPath project manifest file
 ├── README.md                           # Project documentation (you're reading it!)
 └── .gitignore                          # Files/folders excluded from version control
-
+```
 ---
 
 ## ⚙️ Framework Setup & Dependencies
