@@ -1,0 +1,6 @@
+InvoiceNumber,Item,Date,Amount,Tax,Total,Currency
+186931,"Waste management services",2017-06-10,234870,46974,281844,EUR
+826380,"Professional Services",2017-06-08,26987,5397.4,32384.4,RON
+544352,"Waste management services",2017-06-01,170514,34102.8,204617,RON
+928751,"Professional Services",2017-06-28,1415,283,1698,CAD
+431660,"Various paper supplies",2017-06-07,140577,28115.4,168692,CAD

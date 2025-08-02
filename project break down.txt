@@ -1,0 +1,130 @@
+Process Name: GenerateYearlyReportforVendor 
+Process Description: Download all the monthly reports for a specific vendor and
+generate a yearly report.
+ACMESystem1_URL:https://acme-test.uipath.com/
+ACMESystem1_DownloadReports: https://acme-test.uipath.com/reports/download
+ACMESystem1_UploadReports:   https://acme-test.uipath.com/reports/upload
+                
+============================
+orch
+	+Folder
+		-Name: ITI_GenerateYearlyReport
+ 
+	+ Queue:
+		-Name:GenerateYearlyReport_Queue 
+		-Enforce:NO
+		-Retry#:1
+                -Abbonded Items: "yes"
+		-Queue Item Data:
+			-WIURL
+			-WIID
+			-Description
+			-WIType
+			-WIDate
+ 
+	+assets 
+
+		-ACMESystem1_URL
+			-Value:  https://acme-test.uipath.com/ 
+			-Type: Text
+		-ACMESystem1_Credential 
+			-Value: [email] + [password]
+			-Type: Credential
+                -ReportSenderEmail_Credential 
+			-Value: [email] + [password]
+			-Type: Credential
+                -EmailReceiver
+                         value :email
+                         -type :Text
+                 ACMESystem1_DownloadReports:
+                          Value: https://acme-test.uipath.com/reports/download
+                          Type:Text
+                 ACMESystem1_UploadReports:   
+                           Value:https://acme-test.uipath.com/reports/upload
+                           type:Text
+                
+===========================
+===========================
+ACME SYSTEM 1
+	-Open ACMESystem1 
+		- ACMESystem1_Luanch  
+			-in_ACMESystem1URL 
+		-ACMESystem1_Login 
+			-in_ACMESystem1_Credential	
+			-out_boolCheckCredential	
+                -ACMESystem1_InvalidEmailCredential
+
+		-ACMESystem1_Logout  
+			-in_boolCheckCredential 
+		-ACMESystem1_closeWindow 
+
+----------------------- Dispatcher-----------------------
+         
+	-ACMESystem1_NavigateToWorkItems 
+	-ACMESystem1_ReadWorkItem          "Change Data TAble filter"
+		-out_dtWorkItems 
+-----------------------Performer-------------------------
+
+        -ACMESystem1_NavigateToWorkItemDetails  
+		- in_strWI_URL   
+
+	-ACMESystem1_ReadWorkItemTaxID
+		- out_TaxID    "change get text to extract only TaxID"
+         ACMESystem1_NavigateToDownloadMonthlyReports 
+                -in_AcmeDownLoadURl
+         
+        ACMESystem1_WriteToDownloadMonthlyReports (write tax id ,iterate on all months,select pervious year)
+                 -in_TaxID
+                 -in_YearDate  (to add as an argument in selector) (config >> Const >> selected year =YEAR(TODAY())-1)     
+        ACMESystem1_DownloadMonthlyReports
+                  -out_boolReportIsFound
+        ("the previous two xamls should be included in a flow chart to iterate over the pop up for each month")
+         (first cond: out_boolReportIsFound is true means that there's a report ready to download)
+         ("second cond:idx for each month to iterate over ")
+         ACMESystem1_CLoseReportNotFoundPopUp
+        
+        ACMESystem1_CreateFolderDownloadedReport
+            out_FolderPath ("from Config")
+         
+         ACMESystem1_SaveDownloadedReport
+             in_FolderPath ("from Config")  
+            
+         ACMESystem1_ReadMonThlyReports
+         out_dtMonthlyReports
+         in_FolderPath
+         ACMESystem1_WriteYearlyReports
+         -in_dtMonthlyReports
+         -in_StrReportFormat >>>“Yearly-Report- [Year]-[Tax ID].xlsx”
+         -out_dtYearlyRportPath (Ilocal resource) 
+        ACMESystem1_NavigateToUploadYearlyReports 
+                in_AcmeUploadURl
+        ACMESystem1_UploadExcelYearlyReport
+                -in_TaxID
+                -in_yearDate
+                -in_dtYearlyReportPath
+
+       ACMESystem1_ExtractHashCode
+                -out_strHashCode
+ 
+           -ACMESystem1_NavigateToWiWindow  
+                   -in_WIUrl
+	-ACMESystem1_WriteUpdateWorkItemDetails 
+		-in_strHashCode 
+		-in_strStatus
+	-ACMESystem1_UpdateWorkItem  
+		//-out_boolIsItemUpdated
+ 
+	-ACMESystem1_CloseUpdateWorkItemWindow
+
+
+	-Navigate to Update Work Item Window  
+	-Write Work Item 
+		-in_strHashCode 
+		-in_strStatus 
+	-UpdateWorkItem 
+		-out_boolCheckUpdating
+ 
+	-Close Work Item Window
+ 
+ 
+
