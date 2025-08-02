@@ -33,7 +33,7 @@ All these steps are defined in the official Process Design Document¹. :contentR
 ---
 
 ## 🗂 Project Structure 
-Generate-Yearly-Report-For-Vendor/
+```Generate-Yearly-Report-For-Vendor/
 │
 ├── ACME System1/
 │   ├── Common/                          # Shared workflows (Launch, Login, Logout, etc.)
